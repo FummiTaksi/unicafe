@@ -33,14 +33,17 @@ class PalauteNapit extends React.Component {
 class StatistiikkaPalanen extends React.Component {
     render() {
         return (
-            <p>{this.props.teksti}: {this.props.lukuMaara}</p>
+            <tr>
+                <td>{this.props.teksti}</td>
+                <td>{this.props.lukuMaara}</td>
+            </tr>
         )
     }
 }
 
 class StatistiikkaOsio extends React.Component {
     render() {
-        const objektit = [<h3>Statistiikka</h3>];
+        const objektit = [];
         this.props.arvosanat.forEach((arvosana) => {
             const palanen = <StatistiikkaPalanen 
                                 key = {arvosana.teksti}
@@ -49,9 +52,28 @@ class StatistiikkaOsio extends React.Component {
                                 /> 
             objektit.push(palanen);
         })
-        objektit.push(<p>Keskiarvo: {laskeKeskiarvo(this.props.arvosanat)}</p>)
-        objektit.push(<p>Positiivisia: {laskeHyvienOsuus(this.props.arvosanat)}%</p>)
-        return objektit;
+        const keskiarvo = <StatistiikkaPalanen 
+                               key = "keskiarvo" 
+                               teksti = "Keskiarvo:"
+                               lukuMaara = {laskeKeskiarvo(this.props.arvosanat)}
+                               />
+        objektit.push(keskiarvo);
+        const hyvienOsuus = <StatistiikkaPalanen 
+                            key = {"positiiviset"} 
+                            teksti = "Positiivisia:"
+                            lukuMaara = {laskeHyvienOsuus(this.props.arvosanat)}
+        />
+        objektit.push(hyvienOsuus)
+        return (
+            <div>
+                <h3>Statistiikka</h3>
+                    <table>
+                        <tbody>
+                            {objektit}
+                        </tbody>
+                    </table>
+            </div>
+        )
     }
 }
 
@@ -113,7 +135,9 @@ class App extends React.Component {
      statistiikka = (arvosanat) => {
         if (this.state.palautettaAnnettu) {
             return (
-                <StatistiikkaOsio arvosanat = {arvosanat} />
+                <div>
+                    <StatistiikkaOsio arvosanat = {arvosanat} />
+                </div>
             )
         }
         return (<p>Yhtään palautetta ei ole vielä annettu</p>)
