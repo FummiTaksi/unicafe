@@ -87,8 +87,6 @@ const laskeHyvienOsuus = (arvosanat) => {
     return Math.round(osuus * 100) / 100
 }
 
-
-
 class App extends React.Component {
 
     constructor() {
@@ -96,26 +94,40 @@ class App extends React.Component {
         this.state = {
             hyvat: 0,
             neutraalit: 0,
-            huonot: 0
+            huonot: 0,
+            palautettaAnnettu: false
         }
     }
 
     kasvataHyvanMaaraa = () => {
         this.setState({
-            hyvat: this.state.hyvat + 1
+            hyvat: this.state.hyvat + 1,
+            palautettaAnnettu: true
         })
+        
     }
 
     kasvataNeutraalinMaaraa = () => {
         this.setState({
-            neutraalit: this.state.neutraalit + 1
+            neutraalit: this.state.neutraalit + 1,
+            palautettaAnnettu: true
         })
     }
 
     kasvataHuononMaaraa  = () => {
         this.setState({
-            huonot: this.state.huonot + 1
+            huonot: this.state.huonot + 1,
+            palautettaAnnettu: true
         })
+    }
+
+     statistiikka = (arvosanat) => {
+        if (this.state.palautettaAnnettu) {
+            return (
+                <StatistiikkaOsio arvosanat = {arvosanat} />
+            )
+        }
+        return (<p>Yhtään palautetta ei ole vielä annettu</p>)
     }
 
     render () {
@@ -138,11 +150,12 @@ class App extends React.Component {
             arvo: -1
         }
         const arvosanat = [hyva, neutraali, huono];
+
         return (
             <div>
                 <h2>Anna palautetta</h2>
                 <PalauteNapit arvosanat = {arvosanat} />
-                <StatistiikkaOsio arvosanat = {arvosanat} />
+                {this.statistiikka(arvosanat)}
             </div>
         )
     }
