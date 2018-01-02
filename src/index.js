@@ -49,9 +49,45 @@ class StatistiikkaOsio extends React.Component {
                                 /> 
             objektit.push(palanen);
         })
+        objektit.push(<p>Keskiarvo: {laskeKeskiarvo(this.props.arvosanat)}</p>)
+        objektit.push(<p>Positiivisia: {laskeHyvienOsuus(this.props.arvosanat)}%</p>)
         return objektit;
     }
 }
+
+const laskeKeskiarvo = (arvosanat) => {
+    let summa = 0;
+    let palautteidenMaara = 0;
+    arvosanat.forEach((arvosana) => {
+        summa +=  arvosana.arvo  * arvosana.lukuMaara;
+        palautteidenMaara +=  arvosana.lukuMaara;
+    })
+    if (palautteidenMaara === 0) {
+        return 0;
+    }
+    const keskiarvo = summa / palautteidenMaara;
+    return Math.round(keskiarvo * 100) / 100
+}
+
+const laskeHyvienOsuus = (arvosanat) => {
+    let hyvienMaara = 0;
+    let muidenMaara = 0;
+    arvosanat.forEach((arvosana) => {
+        if (arvosana.teksti === "Hyvä") {
+            hyvienMaara += arvosana.lukuMaara;
+        }
+        else {
+            muidenMaara += arvosana.lukuMaara;
+        }
+    })
+    if (hyvienMaara + muidenMaara === 0) {
+        return 0;
+    }
+    const osuus = ( hyvienMaara / (hyvienMaara + muidenMaara) ) * 100.0;
+    return Math.round(osuus * 100) / 100
+}
+
+
 
 class App extends React.Component {
 
@@ -82,21 +118,25 @@ class App extends React.Component {
         })
     }
 
-    teeArvosanaObjekti = (teksti, kasvatusFunktio, lukuMaara) => {
-        return ({
-            teksti: teksti,
-            kasvatusFunktio: kasvatusFunktio,
-            lukuMaara: lukuMaara
-        })
-    }
-
     render () {
-        const hyva = this.teeArvosanaObjekti("Hyvä", this.kasvataHyvanMaaraa, 
-                            this.state.hyvat);
-        const neutraali = this.teeArvosanaObjekti("Neutraali",
-                            this.kasvataNeutraalinMaaraa, this.state.neutraalit);
-        const huono = this.teeArvosanaObjekti("Huono", this.kasvataHuononMaaraa,
-                            this.state.huonot);
+        const hyva = {
+            teksti: "Hyvä",
+            kasvatusFunktio: this.kasvataHyvanMaaraa,
+            lukuMaara: this.state.hyvat,
+            arvo: 1
+        }
+        const neutraali = {
+            teksti: "Neutraali",
+            kasvatusFunktio: this.kasvataNeutraalinMaaraa,
+            lukuMaara: this.state.neutraalit,
+            arvo: 0
+        }
+        const huono = {
+            teksti: "Huono",
+            kasvatusFunktio: this.kasvataHuononMaaraa,
+            lukuMaara: this.state.huonot,
+            arvo: -1
+        }
         const arvosanat = [hyva, neutraali, huono];
         return (
             <div>
