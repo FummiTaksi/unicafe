@@ -99,26 +99,15 @@ class App extends React.Component {
         }
     }
 
-    kasvataHyvanMaaraa = () => {
-        this.setState({
-            hyvat: this.state.hyvat + 1,
-            palautettaAnnettu: true
-        })
+    kasvataMaaraa = (arvosanaNimi, arvo) => {
+
+        return () => {
+            this.setState({
+                [arvosanaNimi]: arvo,
+                palautettaAnnettu: true
+                })
+            }
         
-    }
-
-    kasvataNeutraalinMaaraa = () => {
-        this.setState({
-            neutraalit: this.state.neutraalit + 1,
-            palautettaAnnettu: true
-        })
-    }
-
-    kasvataHuononMaaraa  = () => {
-        this.setState({
-            huonot: this.state.huonot + 1,
-            palautettaAnnettu: true
-        })
     }
 
      statistiikka = (arvosanat) => {
@@ -133,19 +122,19 @@ class App extends React.Component {
     render () {
         const hyva = {
             teksti: "Hyvä",
-            kasvatusFunktio: this.kasvataHyvanMaaraa,
+            kasvatusFunktio: this.kasvataMaaraa("hyvat", this.state.hyvat + 1),
             lukuMaara: this.state.hyvat,
             arvo: 1
         }
         const neutraali = {
             teksti: "Neutraali",
-            kasvatusFunktio: this.kasvataNeutraalinMaaraa,
+            kasvatusFunktio: this.kasvataMaaraa("neutraalit", this.state.neutraalit +1),
             lukuMaara: this.state.neutraalit,
             arvo: 0
         }
         const huono = {
             teksti: "Huono",
-            kasvatusFunktio: this.kasvataHuononMaaraa,
+            kasvatusFunktio: this.kasvataMaaraa("huonot", this.state.huonot + 1),
             lukuMaara: this.state.huonot,
             arvo: -1
         }
