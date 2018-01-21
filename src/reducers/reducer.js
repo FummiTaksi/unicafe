@@ -10,7 +10,7 @@ const initialState = {
         const goodIncreased = {...state , good: state.good + 1}
         return goodIncreased;
       case 'OK':
-        const okIncreased = {...state , ok: state.okIncreased + 1}
+        const okIncreased = {...state , ok: state.ok + 1}
        return okIncreased;
       case 'BAD':
         const badIncreased = {...state , bad: state.bad + 1}
