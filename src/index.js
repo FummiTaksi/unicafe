@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import {counterReducer} from './reducers/reducer'
+import {createStore} from 'redux'
 
+const store = createStore(counterReducer)
 
 
 
@@ -9,7 +12,7 @@ class PalauteNappi extends React.Component {
 
     render() {
         return (
-            <button onClick = {this.props.onClick}>{this.props.teksti}</button>
+            <button onClick = {e => store.dispatch({ type: this.props.type})}>{this.props.teksti}</button>
         )
         
     }
@@ -21,7 +24,7 @@ class PalauteNapit extends React.Component {
         this.props.arvosanat.forEach((arvosana) => {
             const palautenappi = <PalauteNappi 
                                     key = {arvosana.teksti}
-                                    onClick = {arvosana.kasvatusFunktio}
+                                    type = {arvosana.type}
                                     teksti = {arvosana.teksti}
                                     />
             objektit.push(palautenappi);
@@ -42,34 +45,26 @@ class StatistiikkaPalanen extends React.Component {
 }
 
 class StatistiikkaOsio extends React.Component {
+    
     render() {
-        const objektit = [];
-        this.props.arvosanat.forEach((arvosana) => {
-            const palanen = <StatistiikkaPalanen 
-                                key = {arvosana.teksti}
-                                teksti = {arvosana.teksti}
-                                lukuMaara = {arvosana.lukuMaara}
-                                /> 
-            objektit.push(palanen);
+        const state = store.getState()
+        console.log("STATE",state)
+        const objektit = []
+        const maarat = this.props.arvosanat.map((arvosana) => {
+            return (
+                <StatistiikkaPalanen
+                key = {arvosana.teksti}
+                teksti = {arvosana.teksti}
+                lukuMaara = {arvosana.lukuMaara}
+                />
+            )
         })
-        const keskiarvo = <StatistiikkaPalanen 
-                               key = "keskiarvo" 
-                               teksti = "Keskiarvo:"
-                               lukuMaara = {laskeKeskiarvo(this.props.arvosanat)}
-                               />
-        objektit.push(keskiarvo);
-        const hyvienOsuus = <StatistiikkaPalanen 
-                            key = {"positiiviset"} 
-                            teksti = "Positiivisia:"
-                            lukuMaara = {laskeHyvienOsuus(this.props.arvosanat)}
-        />
-        objektit.push(hyvienOsuus)
         return (
             <div>
                 <h3>Statistiikka</h3>
                     <table>
                         <tbody>
-                            {objektit}
+                           {maarat}
                         </tbody>
                     </table>
             </div>
@@ -111,55 +106,25 @@ const laskeHyvienOsuus = (arvosanat) => {
 
 class App extends React.Component {
 
-    constructor() {
-        super();
-        this.state = {
-            hyvat: 0,
-            neutraalit: 0,
-            huonot: 0,
-            palautettaAnnettu: false
-        }
-    }
 
-    kasvataMaaraa = (arvosanaNimi, arvo) => {
-
-        return () => {
-            this.setState({
-                [arvosanaNimi]: arvo,
-                palautettaAnnettu: true
-                })
-            }
-        
-    }
-
-     statistiikka = (arvosanat) => {
-        if (this.state.palautettaAnnettu) {
-            return (
-                <div>
-                    <StatistiikkaOsio arvosanat = {arvosanat} />
-                </div>
-            )
-        }
-        return (<p>Yhtään palautetta ei ole vielä annettu</p>)
-    }
-
+    
     render () {
         const hyva = {
             teksti: "Hyvä",
-            kasvatusFunktio: this.kasvataMaaraa("hyvat", this.state.hyvat + 1),
-            lukuMaara: this.state.hyvat,
+            type: 'GOOD',
+            lukuMaara: store.getState().good,
             arvo: 1
         }
         const neutraali = {
             teksti: "Neutraali",
-            kasvatusFunktio: this.kasvataMaaraa("neutraalit", this.state.neutraalit +1),
-            lukuMaara: this.state.neutraalit,
+            type: 'OK',
+            lukuMaara: store.getState().ok,
             arvo: 0
         }
         const huono = {
             teksti: "Huono",
-            kasvatusFunktio: this.kasvataMaaraa("huonot", this.state.huonot + 1),
-            lukuMaara: this.state.huonot,
+            type: 'BAD',
+            lukuMaara: store.getState().bad,
             arvo: -1
         }
         const arvosanat = [hyva, neutraali, huono];
@@ -168,7 +133,7 @@ class App extends React.Component {
             <div>
                 <h2>Anna palautetta</h2>
                 <PalauteNapit arvosanat = {arvosanat} />
-                {this.statistiikka(arvosanat)}
+                <StatistiikkaOsio arvosanat = {arvosanat} />
             </div>
         )
     }
