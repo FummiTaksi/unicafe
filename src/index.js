@@ -8,6 +8,7 @@ const store = createStore(counterReducer)
 
 
 
+
 class PalauteNappi extends React.Component {
 
     render() {
@@ -109,6 +110,7 @@ class App extends React.Component {
 
     
     render () {
+        const {store} = this.props
         const hyva = {
             teksti: "Hyvä",
             type: 'GOOD',
@@ -140,4 +142,9 @@ class App extends React.Component {
 
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const render = () => {
+    ReactDOM.render(<App store={store} />, document.getElementById('root'));
+}
+
+render()
+store.subscribe(render)
