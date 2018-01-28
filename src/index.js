@@ -48,15 +48,12 @@ class StatistiikkaPalanen extends React.Component {
 class StatistiikkaOsio extends React.Component {
     
     render() {
-        const state = store.getState()
-        console.log("STATE",state)
-        const objektit = []
         const maarat = this.props.arvosanat.map((arvosana) => {
             return (
                 <StatistiikkaPalanen
-                key = {arvosana.teksti}
-                teksti = {arvosana.teksti}
-                lukuMaara = {arvosana.lukuMaara}
+                  key = {arvosana.teksti}
+                  teksti = {arvosana.teksti}
+                  lukuMaara = {arvosana.lukuMaara}
                 />
             )
         })
@@ -66,43 +63,43 @@ class StatistiikkaOsio extends React.Component {
                     <table>
                         <tbody>
                            {maarat}
+                           <StatistiikkaPalanen 
+                              teksti = "Hyvien osuus: (%)  "
+                              lukuMaara = {laskeHyvienOsuus()}
+                            />
+                            <StatistiikkaPalanen
+                              teksti = "Keskiarvo:"
+                              lukuMaara = {laskeKeskiarvo()}
+                            />  
                         </tbody>
+
                     </table>
+
             </div>
         )
     }
 }
 
 const laskeKeskiarvo = (arvosanat) => {
-    let summa = 0;
-    let palautteidenMaara = 0;
-    arvosanat.forEach((arvosana) => {
-        summa +=  arvosana.arvo  * arvosana.lukuMaara;
-        palautteidenMaara +=  arvosana.lukuMaara;
-    })
-    if (palautteidenMaara === 0) {
-        return 0;
+    const state = store.getState()
+    const lkm = state.good + state.bad + state.ok
+    if (lkm === 0) {
+        return 0
     }
-    const keskiarvo = summa / palautteidenMaara;
+    const summa = state.good * 1 + state.bad * -1
+    const keskiarvo = summa / lkm;
     return Math.round(keskiarvo * 100) / 100
 }
 
-const laskeHyvienOsuus = (arvosanat) => {
-    let hyvienMaara = 0;
-    let muidenMaara = 0;
-    arvosanat.forEach((arvosana) => {
-        if (arvosana.teksti === "Hyvä") {
-            hyvienMaara += arvosana.lukuMaara;
-        }
-        else {
-            muidenMaara += arvosana.lukuMaara;
-        }
-    })
-    if (hyvienMaara + muidenMaara === 0) {
-        return 0;
+const laskeHyvienOsuus = () => {
+    const state = store.getState()
+    const hyvat = state.good
+    const muut = state.bad + state.ok
+    if (hyvat + muut === 0) {
+        return 0
     }
-    const osuus = ( hyvienMaara / (hyvienMaara + muidenMaara) ) * 100.0;
-    return Math.round(osuus * 100) / 100
+    const osuus = hyvat / (hyvat + muut)
+    return (Math.round(osuus * 100) / 100) * 100
 }
 
 class App extends React.Component {
